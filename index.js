@@ -43,6 +43,22 @@ app.get('/biodata', (req, res) => {
         });
 });
 
+//Ambil satu data biodata berdasarkan id
+app.get('/biodata/:id', (req, res) => {
+    const { id } = req.params;
+    pool.query('SELECT * FROM biodata WHERE id = $1', [id])
+        .then(result => {
+            if (result.rows.length === 0) {
+                return res.status(404).json({ message: `Data dengan id ${id} tidak ditemukan` });
+            }
+            res.json(result.rows[0]);
+        })
+        .catch(err => {
+            console.error("Error executing query", err.stack);
+            res.status(500).json({ message: "Database Error", error: err.message });
+        });
+});
+
 app.listen(port, () => {
     console.log(`App running on port ${port},`)
 })
